@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8001/api';
+// In development the Vite dev server runs separately from the backend, so we
+// default to the backend's direct address.  When built for Docker the
+// VITE_API_BASE build-arg is set to "/api" and nginx proxies those requests
+// to the backend container, avoiding any CORS issues.
+const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8001/api';
 
 export interface CompileResult {
   success: boolean;

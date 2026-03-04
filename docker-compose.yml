@@ -1,0 +1,31 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: openwokwi-backend
+    restart: unless-stopped
+    # The backend does NOT need to be exposed on the host – all traffic
+    # reaches it through the nginx reverse-proxy running in `frontend`.
+    # Uncomment the lines below if you want to call the API directly
+    # (e.g. for debugging with curl or the /docs UI).
+    # ports:
+    #   - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: openwokwi-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
